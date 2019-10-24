@@ -1,20 +1,27 @@
 const passport = require('passport');
 
 module.exports = app => {
-app.get(
+  app.get(
     '/auth/google',
     passport.authenticate('google', {
-        scope: ['profile', 'email']
+      scope: ['profile', 'email', 'https://www.googleapis.com/auth/youtube'],
+      prompt: 'select_account'
     })
-);
+  );
 
-  app.get
-  ('/auth/google/callback',
-  passport.authenticate('google'),
-  (req, res) => {
-    res.redirect('/surveys');
-  }
-);
+  app.get('/api/delete/me', async (req, res) => {
+    await req.user.delete();
+    req.logout();
+    res.send('deleted user');
+  });
+
+  app.get(
+    '/auth/google/callback',
+    passport.authenticate('google'),
+    (req, res) => {
+      res.redirect('/surveys');
+    }
+  );
 
   app.get('/api/logout', (req, res) => {
     req.logout();
